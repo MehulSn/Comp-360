@@ -1,0 +1,42 @@
+[gd_scene load_steps=6 format=3 uid="uid://bebm8fykl5cxl"]
+
+[ext_resource type="Script" uid="uid://dg6oidcxp2u2a" path="res://scripts/BeachTerrain.gd" id="1_0aagh"]
+[ext_resource type="Texture2D" uid="uid://b12sc7d4smd5j" path="res://assets/sand_texture.webp" id="1_jglpc"]
+
+[sub_resource type="QuadMesh" id="QuadMesh_5qdbo"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_svwjo"]
+albedo_texture = ExtResource("1_jglpc")
+uv1_triplanar = true
+uv1_triplanar_sharpness = 0.5
+
+[sub_resource type="Environment" id="Environment_0aagh"]
+background_mode = 2
+background_energy_multiplier = 0.7
+tonemap_mode = 3
+tonemap_exposure = 0.5
+ssr_enabled = true
+ssr_fade_in = 0.05
+ssr_fade_out = 0.05
+ssr_depth_tolerance = 0.11
+ssao_enabled = true
+glow_enabled = true
+
+[node name="BeachScene" type="Node3D"]
+
+[node name="BeachTerrain" type="MeshInstance3D" parent="."]
+mesh = SubResource("QuadMesh_5qdbo")
+surface_material_override/0 = SubResource("StandardMaterial3D_svwjo")
+script = ExtResource("1_0aagh")
+
+[node name="MainCamera" type="Camera3D" parent="."]
+
+[node name="SunLight" type="DirectionalLight3D" parent="."]
+light_color = Color(1, 0.9607843, 0.9019608, 1)
+light_energy = 2.0
+shadow_enabled = true
+shadow_bias = 0.05
+shadow_normal_bias = 0.8
+
+[node name="Environment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_0aagh")
