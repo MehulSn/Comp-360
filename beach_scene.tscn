@@ -1,8 +1,7 @@
-[gd_scene load_steps=7 format=3 uid="uid://bebm8fykl5cxl"]
+[gd_scene load_steps=6 format=3 uid="uid://bebm8fykl5cxl"]
 
 [ext_resource type="Script" uid="uid://dg6oidcxp2u2a" path="res://scripts/BeachTerrain.gd" id="1_0aagh"]
 [ext_resource type="Texture2D" uid="uid://b12sc7d4smd5j" path="res://assets/sand_texture.webp" id="1_jglpc"]
-[ext_resource type="Script" uid="uid://cnjp87d8mja3a" path="res://scripts/NoisePreview.gd" id="3_em4q6"]
 
 [sub_resource type="QuadMesh" id="QuadMesh_5qdbo"]
 
@@ -24,6 +23,7 @@ ssao_enabled = true
 glow_enabled = true
 
 [node name="BeachScene" type="Node3D"]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 0, 0)
 
 [node name="BeachTerrain" type="MeshInstance3D" parent="."]
 mesh = SubResource("QuadMesh_5qdbo")
@@ -42,12 +42,8 @@ shadow_normal_bias = 0.8
 [node name="Environment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_0aagh")
 
-[node name="Node2D" type="Node2D" parent="."]
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.70710677, -0.49999997, 0.49999997, 0, 0.70710677, 0.70710677, -0.70710677, -0.49999997, 0.49999997, 0, 0, 0)
 
-[node name="NoisePreview" type="TextureRect" parent="Node2D"]
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-script = ExtResource("3_em4q6")
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(0.70710677, -0.61237246, 0.35355335, 0, 0.49999997, 0.86602545, -0.70710677, -0.61237246, 0.35355335, 64, 80, 64)

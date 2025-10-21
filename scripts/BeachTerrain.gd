@@ -4,20 +4,19 @@ extends MeshInstance3D
 # --- Exported Parameters ---
 @export_range(2, 1024, 1) var grid_size: int = 128 : set = set_grid_size
 @export var quad_size: float = 1.0 : set = set_quad_size
-@export var height_scale: float = 8.0 : set = set_height_scale
+@export var height_scale: float = 25.0 : set = set_height_scale
 @export var noise_frequency: float = 0.02 : set = set_noise_frequency
 @export var noise_seed: int = 1234 : set = set_noise_seed
 
-
-# for ocean (future refrence)
-
+# for ocean (future reference)
 @export var ocean_slope: float = 0.03 : set = set_ocean_slope
 @export var ocean_direction: Vector2 = Vector2(1, 0) : set = set_ocean_direction # (x,z) direction
 
 @export var auto_update_in_editor := true
 
 # Internal
-var noise := FastNoiseLite.new()
+var noise: FastNoiseLite
+
 func vert_index(x_index: int, z_index: int, verts_per_side: int) -> int:
 	return z_index * verts_per_side + x_index
 
@@ -25,9 +24,11 @@ func vert_index(x_index: int, z_index: int, verts_per_side: int) -> int:
 # -----------------------------
 # Initialization
 # -----------------------------
+@onready var material_manager = preload("res://scripts/MaterialManager.gd").new()
 func _ready():
-	if Engine.is_editor_hint():
-		_generate_beach_mesh()
+	print("BeachTerrain ready, generating mesh...")
+	material_manager.apply_sand_material($BeachTerrain)
+	_generate_beach_mesh()
 
 
 # -----------------------------
@@ -46,10 +47,8 @@ func set_ocean_direction(v):
 		ocean_direction = Vector2(1, 0)
 	_maybe_regenerate()
 
-
-
 func _maybe_regenerate():
-	if Engine.is_editor_hint() and auto_update_in_editor:
+	if auto_update_in_editor:
 		_generate_beach_mesh()
 
 
@@ -57,12 +56,19 @@ func _maybe_regenerate():
 # Main Mesh Generation
 # -----------------------------
 func _generate_beach_mesh():
-	# Configure noise
+	# --- Configure noise ---
+	noise = FastNoiseLite.new()
 	noise.seed = noise_seed
-	noise.noise_type = FastNoiseLite.TYPE_CELLULAR
+	noise.noise_type = FastNoiseLite.TYPE_SIMPLEX
 	noise.frequency = noise_frequency
 	noise.fractal_octaves = 4
 
+	# --- Debug ---
+	var s1 = noise.get_noise_2d(0, 0)
+	var s2 = noise.get_noise_2d(100, 100)
+	print("Noise samples:", s1, s2)
+
+	# --- Initialize SurfaceTool ---
 	var st := SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
 
@@ -76,20 +82,18 @@ func _generate_beach_mesh():
 			var world_x = float(x) * quad_size
 			var world_z = float(z) * quad_size
 
-			var height_val = noise.get_noise_2d(world_x, world_z) * height_scale
+			# ✅ Generate height from noise
+			var height_val = noise.get_noise_2d(world_x, world_z) * height_scale * 50.0
 
 			# Apply gentle slope toward ocean
 			var slope_offset = ocean_slope * Vector2(world_x, world_z).dot(ocean_direction)
 			height_val -= slope_offset
 
+			# ✅ Use height_val in vertex position
 			positions.append(Vector3(world_x, height_val, world_z))
 			uvs.append(Vector2(float(x) / grid_size, float(z) / grid_size))
 
-	# --- Build triangles (shared vertices, no seams) ---
-
-
-
-
+	# --- Build Triangles (shared vertices, no seams) ---
 	for z in range(grid_size):
 		for x in range(grid_size):
 			var i0 = vert_index(x, z, verts_per_side)
@@ -97,23 +101,23 @@ func _generate_beach_mesh():
 			var i2 = vert_index(x, z + 1, verts_per_side)
 			var i3 = vert_index(x + 1, z + 1, verts_per_side)
 
-
-
 			# Triangle 1
-			st.add_uv(uvs[i0]); st.add_vertex(positions[i0])
-			st.add_uv(uvs[i2]); st.add_vertex(positions[i2])
-			st.add_uv(uvs[i1]); st.add_vertex(positions[i1])
+# Triangle 1
+			st.set_uv(uvs[i0]); st.add_vertex(positions[i0])
+			st.set_uv(uvs[i2]); st.add_vertex(positions[i2])
+			st.set_uv(uvs[i1]); st.add_vertex(positions[i1])
 
-			# Triangle 2
-			st.add_uv(uvs[i1]); st.add_vertex(positions[i1])
-			st.add_uv(uvs[i2]); st.add_vertex(positions[i2])
-			st.add_uv(uvs[i3]); st.add_vertex(positions[i3])
+# Triangle 2
+			st.set_uv(uvs[i1]); st.add_vertex(positions[i1])
+			st.set_uv(uvs[i2]); st.add_vertex(positions[i2])
+			st.set_uv(uvs[i3]); st.add_vertex(positions[i3])
 
+	# --- Generate Normals and Commit ---
+	print("Generating mesh with", grid_size, "grid, height scale =", height_scale)
 	st.generate_normals()
-	var mesh_data = st.commit()
-	mesh = mesh_data
+	mesh = st.commit()
 
-	# Assign material
+	# --- Assign Material ---
 	material_override = _create_sand_material()
 
 

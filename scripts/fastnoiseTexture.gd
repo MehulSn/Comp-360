@@ -1,5 +1,5 @@
 extends Resource
-class_name FastNoiseTexture
+
 
 @export var seed: int = 1337:
 	set(value):
@@ -62,12 +62,11 @@ func _normalize(value: float) -> float:
 
 func _generate_image() -> Image:
 	var img := Image.create(size, size, false, Image.FORMAT_RF)
-	img.lock()
 	for x in size:
 		for y in size:
 			var val = _normalize(_noise.get_noise_2d(x * frequency, y * frequency))
 			img.set_pixel(x, y, Color(val, val, val))
-	img.unlock()
+	
 	return img
 
 func regenerate() -> void:

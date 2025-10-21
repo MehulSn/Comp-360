@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3 uid="uid://co4fu7sxru8o0"]
+
+[ext_resource type="Script" uid="uid://cnjp87d8mja3a" path="res://scripts/NoisePreview.gd" id="1_g6ul1"]
+
+[node name="Node2D" type="Node2D"]
+
+[node name="TextureRect" type="TextureRect" parent="."]
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("1_g6ul1")
