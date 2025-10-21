@@ -1,0 +1,6 @@
+[gd_resource type="Resource" load_steps=2 format=3 uid="uid://c2ugxfyqg4nhh"]
+
+[ext_resource type="Script" uid="uid://c0c7bthag2giu" path="res://scripts/fastnoiseTexture.gd" id="1_oisvr"]
+
+[resource]
+script = ExtResource("1_oisvr")

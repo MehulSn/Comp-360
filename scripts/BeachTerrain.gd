@@ -13,6 +13,7 @@ extends MeshInstance3D
 @export var ocean_direction: Vector2 = Vector2(1, 0) : set = set_ocean_direction # (x,z) direction
 
 @export var auto_update_in_editor := true
+@export var noise_resource: Resource
 
 # Internal
 var noise: FastNoiseLite
@@ -27,7 +28,7 @@ func vert_index(x_index: int, z_index: int, verts_per_side: int) -> int:
 @onready var material_manager = preload("res://scripts/MaterialManager.gd").new()
 func _ready():
 	print("BeachTerrain ready, generating mesh...")
-	material_manager.apply_sand_material($BeachTerrain)
+	# material_manager.apply_sand_material(self)
 	_generate_beach_mesh()
 
 
@@ -57,11 +58,17 @@ func _maybe_regenerate():
 # -----------------------------
 func _generate_beach_mesh():
 	# --- Configure noise ---
-	noise = FastNoiseLite.new()
-	noise.seed = noise_seed
-	noise.noise_type = FastNoiseLite.TYPE_SIMPLEX
-	noise.frequency = noise_frequency
-	noise.fractal_octaves = 4
+	if noise_resource and noise_resource.has_meta("_noise"):
+		noise = noise_resource._noise
+	else:
+		noise = FastNoiseLite.new()
+		noise.seed = noise_seed
+		noise.noise_type = FastNoiseLite.TYPE_SIMPLEX
+		noise.frequency = noise_frequency
+		noise.fractal_octaves = 4
+
+
+
 
 	# --- Debug ---
 	var s1 = noise.get_noise_2d(0, 0)

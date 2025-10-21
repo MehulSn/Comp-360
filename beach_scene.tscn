@@ -1,7 +1,8 @@
-[gd_scene load_steps=6 format=3 uid="uid://bebm8fykl5cxl"]
+[gd_scene load_steps=7 format=3 uid="uid://bebm8fykl5cxl"]
 
 [ext_resource type="Script" uid="uid://dg6oidcxp2u2a" path="res://scripts/BeachTerrain.gd" id="1_0aagh"]
 [ext_resource type="Texture2D" uid="uid://b12sc7d4smd5j" path="res://assets/sand_texture.webp" id="1_jglpc"]
+[ext_resource type="Resource" uid="uid://c2ugxfyqg4nhh" path="res://assets/fastnoise.tres" id="3_em4q6"]
 
 [sub_resource type="QuadMesh" id="QuadMesh_5qdbo"]
 
@@ -29,6 +30,7 @@ transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 0
 mesh = SubResource("QuadMesh_5qdbo")
 surface_material_override/0 = SubResource("StandardMaterial3D_svwjo")
 script = ExtResource("1_0aagh")
+noise_resource = ExtResource("3_em4q6")
 
 [node name="MainCamera" type="Camera3D" parent="."]
 
