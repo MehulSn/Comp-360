@@ -8,7 +8,9 @@ extends MeshInstance3D
 @export var noise_frequency: float = 0.02 : set = set_noise_frequency
 @export var noise_seed: int = 1234 : set = set_noise_seed
 
+
 # for ocean (future refrence)
+
 @export var ocean_slope: float = 0.03 : set = set_ocean_slope
 @export var ocean_direction: Vector2 = Vector2(1, 0) : set = set_ocean_direction # (x,z) direction
 
